@@ -1,3 +1,9 @@
+# This is a sample project
+# Revision history
+# v2. created db
+# v1. accepted input
+
+
 import sqlite3
 import os
 
