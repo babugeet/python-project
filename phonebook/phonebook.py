@@ -1,13 +1,13 @@
 # This is a sample project
 # Revision history
-# v2. created db
-# v1. accepted input
-
+# v2.1 babugeet;  Accepted password,hashed password, list db content after password check
+# v2. babugeet; created db
+# v1. babugeet; accepted input
 
 import sqlite3
 import os
-
-
+from passlib.hash import bcrypt
+from getpass import getpass
 
 DB_NAME="C:/Users/babugeet/Documents/GitHub/python-project/phonebook.db"
 phone_dict={}
@@ -15,7 +15,7 @@ def create_db():
     if os.path.isfile(DB_NAME):
         try:
             conn=sqlite3.connect(DB_NAME)
-            print("db created")
+            print("db present")
         except: 
             print("error in creating db")
             exit()
@@ -27,6 +27,9 @@ def create_table():
     conn.commit()
     conn.close()
 
+def take_password():
+    password = getpass("Enter the password: ")
+    return password
         
 def take_input():
 
@@ -35,6 +38,9 @@ def take_input():
     phone_dict["age"]=int(input("Enter your age: "))
     phone_dict["place"]=input("Enter your place: ")
     phone_dict["phone"]=int(input("Enter your phone number: "))
+    password = take_password()
+    # hashed_password = hasher.hash(password)
+    phone_dict["password"]=password
     return phone_dict
 
 
@@ -44,6 +50,10 @@ class PhoneBook():
         self.age=input_dict["age"]
         self.place=input_dict["place"]
         self.phone=int(input_dict["phone"])
+        self.hasher = bcrypt.using(rounds=13) 
+        self.password=self.hasher.hash(input_dict["password"])
+
+        
 
 
     
@@ -51,7 +61,7 @@ class PhoneBook():
         conn = sqlite3.connect(DB_NAME) 
         c = conn.cursor()
         try:
-            c.execute("INSERT INTO phonebook('Name','Age','Place','Phone') VALUES (?,?,?,?)",(self.name,self.age,self.place,self.phone))
+            c.execute("INSERT INTO phonebook('Name','Age','Place','Phone','PASS') VALUES (?,?,?,?,?)",(self.name,self.age,self.place,self.phone,self.password))
             conn.commit()
             c.close()
         except sqlite3.Error as error:
@@ -62,8 +72,15 @@ class PhoneBook():
     def read_db(self):
         conn = sqlite3.connect(DB_NAME) 
         c = conn.cursor()
-        c.execute("SELECT * from phonebook WHERE NAme=(?)",(self.name,))
-        print(c.fetchall())
+        
+        password = take_password()
+        hashed_password=c.execute("SELECT PASS from phonebook WHERE NAme=(?)",(self.name,))
+        # print(hashed_password.fetchone()[0])
+        if self.hasher.verify(password, bytes(hashed_password.fetchone()[0],'utf-8')):
+            c.execute("SELECT * from phonebook WHERE NAme=(?)",(self.name,))
+            print(c.fetchall())
+        else:
+            print("Password Error")
         c.close()
 
 create_db()
