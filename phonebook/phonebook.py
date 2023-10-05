@@ -1,15 +1,19 @@
 # This is a sample project
 # Revision history
+#TODO implement delete operation
+#TODO #1 remove printing of hashed password
+# v2.2 babugeet; Implemented argument approach for user input.
 # v2.1 babugeet;  Accepted password,hashed password, list db content after password check
 # v2. babugeet; created db
 # v1. babugeet; accepted input
 
 import sqlite3
 import os
+import sys
 from passlib.hash import bcrypt
 from getpass import getpass
 
-DB_NAME="C:/Users/babugeet/Documents/GitHub/python-project/phonebook.db"
+DB_NAME="phonebook.db"
 phone_dict={}
 def create_db():
     if os.path.isfile(DB_NAME):
@@ -45,15 +49,13 @@ def take_input():
 
 
 class PhoneBook():
-    def __init__(self,input_dict):
+    def __init__(self,input_dict=None):
         self.name=input_dict["name"]
         self.age=input_dict["age"]
         self.place=input_dict["place"]
         self.phone=int(input_dict["phone"])
         self.hasher = bcrypt.using(rounds=13) 
         self.password=self.hasher.hash(input_dict["password"])
-
-        
 
 
     
@@ -68,28 +70,60 @@ class PhoneBook():
             print("Failed to insert data into sqlite table", error)
         finally:
             if conn:
-                conn.close
-    def read_db(self):
-        conn = sqlite3.connect(DB_NAME) 
-        c = conn.cursor()
+                conn.close()
+def read_db(name_input):
+    conn = sqlite3.connect(DB_NAME) 
+    c = conn.cursor()
+    c.execute("SELECT * from phonebook WHERE NAme=(?)",(name_input,))
+    if len(c.fetchall()) == 0:
+        print('{} user not found'.format(name_input))
+        exit(1)
+    password = take_password()
+    hasher = bcrypt.using(rounds=13)
+    hashed_password=c.execute("SELECT PASS from phonebook WHERE NAme=(?)",(name_input,))
+    # print(hashed_password.fetchone()[0])
+    if hasher.verify(password, bytes(hashed_password.fetchone()[0],'utf-8')):
+        c.execute("SELECT * from phonebook WHERE NAme=(?)",(name_input,))
+        print(c.fetchall())
+    else:
+        print("Password Error")
+    c.close()
+
+def operator_selection():
+    if len(sys.argv) > 2:
+        # print((sys.argv[0]))
+        print( " Only one operation supported at a time, pls choose one of ( add, read, delete)")
+        exit(1)
+    return sys.argv[1]
+
+def selection_execution(oper_input):
+    if oper_input == "add":
+        phone_dict_content=take_input()
+        phone_diary=PhoneBook(phone_dict_content)
+        phone_diary.add_db()
+    elif oper_input =="read":
+        name_input=input("Enter the name: ")
+        read_db(name_input)
+    elif oper_input=="delete":
+        pass
+    else:
+        print("wrong input choosen")
+
+    # match oper_input:
+    #     case "add":
+    #         phone_dict_content=take_input()
+    #     case "read":
+    #         pass:
+    #     case "delete":
+    #         pass
         
-        password = take_password()
-        hashed_password=c.execute("SELECT PASS from phonebook WHERE NAme=(?)",(self.name,))
-        # print(hashed_password.fetchone()[0])
-        if self.hasher.verify(password, bytes(hashed_password.fetchone()[0],'utf-8')):
-            c.execute("SELECT * from phonebook WHERE NAme=(?)",(self.name,))
-            print(c.fetchall())
-        else:
-            print("Password Error")
-        c.close()
 
-create_db()
-create_table()
-phone_dict_content=take_input()
-phone=PhoneBook(phone_dict)
-phone.add_db()
-phone.read_db()
+def main():
+    create_db()
+    create_table()
+    oper_sel=operator_selection()
+    selection_execution(oper_sel)
+    
 
-# print(phone_dict_content)
-
-
+if __name__ == '__main__':
+    main()
