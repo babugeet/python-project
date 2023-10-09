@@ -1,7 +1,7 @@
 # This is a sample project
 # Revision history
-#TODO implement delete operation
-#TODO #1 remove printing of hashed password
+#TODO #4 Implement logging
+#TODO #5 Format the read output
 # v2.3 babugeet; Implemented Delete operation and password hidden
 # v2.2 babugeet; Implemented argument approach for user input.
 # v2.1 babugeet;  Accepted password,hashed password, list db content after password check
