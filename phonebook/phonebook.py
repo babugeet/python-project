@@ -2,10 +2,15 @@
 # Revision history
 #TODO implement delete operation
 #TODO #1 remove printing of hashed password
+# v2.3 babugeet; Implemented Delete operation and password hidden
 # v2.2 babugeet; Implemented argument approach for user input.
 # v2.1 babugeet;  Accepted password,hashed password, list db content after password check
 # v2. babugeet; created db
 # v1. babugeet; accepted input
+
+#Quick Info
+# for editing db, open--> edit --> commit --> delete
+
 
 import sqlite3
 import os
@@ -83,7 +88,7 @@ def read_db(name_input):
     hashed_password=c.execute("SELECT PASS from phonebook WHERE NAme=(?)",(name_input,))
     # print(hashed_password.fetchone()[0])
     if hasher.verify(password, bytes(hashed_password.fetchone()[0],'utf-8')):
-        c.execute("SELECT * from phonebook WHERE NAme=(?)",(name_input,))
+        c.execute("SELECT NAme,Age,Place,Phone from phonebook WHERE NAme=(?)",(name_input,))
         print(c.fetchall())
     else:
         print("Password Error")
@@ -96,6 +101,14 @@ def operator_selection():
         exit(1)
     return sys.argv[1]
 
+def delete_user(name_input):
+    conn = sqlite3.connect(DB_NAME) 
+    c = conn.cursor()
+    print("Deleting {} from phonebook".format(name_input))
+    c.execute("delete  from phonebook where NAme=(?)",(name_input,))
+    conn.commit()
+    c.close()
+
 def selection_execution(oper_input):
     if oper_input == "add":
         phone_dict_content=take_input()
@@ -105,7 +118,8 @@ def selection_execution(oper_input):
         name_input=input("Enter the name: ")
         read_db(name_input)
     elif oper_input=="delete":
-        pass
+        name_input=input("Enter the name of the user to be deleted: ")
+        delete_user(name_input)
     else:
         print("wrong input choosen")
 
