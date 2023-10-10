@@ -89,7 +89,8 @@ def read_db(name_input):
     # print(hashed_password.fetchone()[0])
     if hasher.verify(password, bytes(hashed_password.fetchone()[0],'utf-8')):
         c.execute("SELECT NAme,Age,Place,Phone from phonebook WHERE NAme=(?)",(name_input,))
-        print(c.fetchall())
+        output=c.fetchone()
+        print(f'Name is {output[0]}, Age is {output[1]}, Place is {output[2]}, Phone number is {output[3]} ')
     else:
         print("Password Error")
     c.close()
