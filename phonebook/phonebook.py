@@ -1,7 +1,9 @@
 # This is a sample project
 # Revision history
+#TODO #8 Check if the user already exist before taking any more user input
+#TODO #9 Supress unwanted message in log (when loglevel is DEBUG)
 #TODO #4 Implement logging
-#TODO #5 Format the read output
+#TODO #7 Implement password policy check
 # v2.3 babugeet; Implemented Delete operation and password hidden
 # v2.2 babugeet; Implemented argument approach for user input.
 # v2.1 babugeet;  Accepted password,hashed password, list db content after password check
@@ -15,6 +17,7 @@
 import sqlite3
 import os
 import sys
+import logging
 from passlib.hash import bcrypt
 from getpass import getpass
 
@@ -24,9 +27,11 @@ def create_db():
     if os.path.isfile(DB_NAME):
         try:
             conn=sqlite3.connect(DB_NAME)
+            logging.info("db present")
             print("db present")
         except: 
             print("error in creating db")
+            logging.error('error in creating db')
             exit()
 def create_table():
     conn = sqlite3.connect(DB_NAME) 
@@ -43,6 +48,7 @@ def take_password():
 def take_input():
 
     print("Enter details to the active directory ")
+    logging.info('Entering details to the active directory')
     phone_dict["name"]=input("Enter your Name: ")
     phone_dict["age"]=int(input("Enter your age: "))
     phone_dict["place"]=input("Enter your place: ")
@@ -72,6 +78,7 @@ class PhoneBook():
             conn.commit()
             c.close()
         except sqlite3.Error as error:
+            logging.error("Failed to insert data into sqlite table",error)
             print("Failed to insert data into sqlite table", error)
         finally:
             if conn:
@@ -82,6 +89,7 @@ def read_db(name_input):
     c.execute("SELECT * from phonebook WHERE NAme=(?)",(name_input,))
     if len(c.fetchall()) == 0:
         print('{} user not found'.format(name_input))
+        logging.error('{} user not found'.format(name_input))
         exit(1)
     password = take_password()
     hasher = bcrypt.using(rounds=13)
@@ -91,13 +99,16 @@ def read_db(name_input):
         c.execute("SELECT NAme,Age,Place,Phone from phonebook WHERE NAme=(?)",(name_input,))
         output=c.fetchone()
         print(f'Name is {output[0]}, Age is {output[1]}, Place is {output[2]}, Phone number is {output[3]} ')
+        logging.info(f'Output printed for user {output[0]}')
     else:
         print("Password Error")
+        logging.error("Password Error")
     c.close()
 
 def operator_selection():
     if len(sys.argv) > 2:
         # print((sys.argv[0]))
+        logging.error("Failed to recieve user input, multiple options given")
         print( " Only one operation supported at a time, pls choose one of ( add, read, delete)")
         exit(1)
     return sys.argv[1]
@@ -106,6 +117,7 @@ def delete_user(name_input):
     conn = sqlite3.connect(DB_NAME) 
     c = conn.cursor()
     print("Deleting {} from phonebook".format(name_input))
+    logging.info("Deleting {} from phonebook".format(name_input))
     c.execute("delete  from phonebook where NAme=(?)",(name_input,))
     conn.commit()
     c.close()
@@ -123,7 +135,8 @@ def selection_execution(oper_input):
         delete_user(name_input)
     else:
         print("wrong input choosen")
-
+        logging.error("Failed to recieve user input, wrong options selected")
+        exit(1)
     # match oper_input:
     #     case "add":
     #         phone_dict_content=take_input()
@@ -134,6 +147,7 @@ def selection_execution(oper_input):
         
 
 def main():
+    logging.basicConfig(format='%(asctime)s %(message)s',filename='example.log', level=logging.DEBUG)
     create_db()
     create_table()
     oper_sel=operator_selection()
