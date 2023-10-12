@@ -1,0 +1,14 @@
+2023-10-12 17:23:09,969 db present
+2023-10-12 17:23:16,289 trapped unexpected response from 'os_crypt' backend: verify('test', b'$2$04$5BJqKfqMQvV7nS.yUguNcuRfMMOXK0xPWavM7pOzjEi5ze5T1k8/S'):
+Traceback (most recent call last):
+  File "/home/babugeet/.local/lib/python3.8/site-packages/passlib/handlers/bcrypt.py", line 303, in safe_verify
+    return verify(secret, hash)
+  File "/home/babugeet/.local/lib/python3.8/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/home/babugeet/.local/lib/python3.8/site-packages/passlib/handlers/bcrypt.py", line 837, in _calc_checksum
+    raise uh.exc.InternalBackendError(
+passlib.exc.InternalBackendError: crypt.crypt() failed for unknown reason; passlib recommends running `pip install bcrypt` for general bcrypt support.(config=<hash <class 'str'> value omitted>, secret=<hash <class 'bytes'> value omitted>)
+2023-10-12 17:23:16,291 'os_crypt' backend lacks $2$ support, enabling workaround
+2023-10-12 17:23:16,702 Output printed for user Abhinandh
+2023-10-12 17:28:42,772 db present
+2023-10-12 17:28:44,865 Deleting Sqw from phonebook
