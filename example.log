@@ -16,3 +16,46 @@ passlib.exc.InternalBackendError: crypt.crypt() failed for unknown reason; passl
 2023-10-12 17:40:51,253 detected 'bcrypt' backend, version '4.0.1'
 2023-10-12 17:40:51,254 'bcrypt' backend lacks $2$ support, enabling workaround
 2023-10-12 17:40:51,780 Output printed for user Abhinandh
+2023-10-13 18:20:49,956 db present
+2023-10-13 18:20:49,963 Entering details to the active directory
+2023-10-13 18:21:32,749 db present
+2023-10-13 18:21:32,760 Entering details to the active directory
+2023-10-13 18:21:40,338 detected 'bcrypt' backend, version '4.0.1'
+2023-10-13 18:21:40,339 'bcrypt' backend lacks $2$ support, enabling workaround
+2023-10-13 18:22:10,538 db present
+2023-10-13 18:22:10,544 Entering details to the active directory
+2023-10-13 18:22:24,751 detected 'bcrypt' backend, version '4.0.1'
+2023-10-13 18:22:24,752 'bcrypt' backend lacks $2$ support, enabling workaround
+2023-10-13 18:23:28,916 db present
+2023-10-13 18:23:28,927 Entering details to the active directory
+2023-10-13 18:25:53,851 db present
+2023-10-13 18:25:53,856 Entering details to the active directory
+2023-10-13 18:26:16,940 db present
+2023-10-13 18:26:16,949 Entering details to the active directory
+2023-10-13 18:26:32,643 detected 'bcrypt' backend, version '4.0.1'
+2023-10-13 18:26:32,644 'bcrypt' backend lacks $2$ support, enabling workaround
+2023-10-13 18:27:41,102 db present
+2023-10-13 18:27:41,111 Entering details to the active directory
+2023-10-13 18:27:45,922 db present
+2023-10-13 18:27:45,932 Entering details to the active directory
+2023-10-13 18:28:00,475 Password check filled, user not added in the db
+2023-10-13 18:28:07,983 db present
+2023-10-13 18:28:07,992 Entering details to the active directory
+2023-10-13 18:28:12,009 db present
+2023-10-13 18:28:12,016 Entering details to the active directory
+2023-10-13 18:28:24,863 detected 'bcrypt' backend, version '4.0.1'
+2023-10-13 18:28:24,864 'bcrypt' backend lacks $2$ support, enabling workaround
+2023-10-13 18:42:04,727 db present
+2023-10-13 18:42:30,436 db present
+2023-10-13 18:42:33,541 duplicate Abhinandh user  found
+2023-10-13 18:42:37,552 db present
+2023-10-13 18:42:50,426 db present
+2023-10-13 18:42:53,579 duplicate Abhinandh user  found
+2023-10-13 18:42:55,640 db present
+2023-10-13 18:43:04,121 Entering details to the active directory
+2023-10-13 18:43:27,531 db present
+2023-10-13 18:43:29,268 duplicate Ab user  found
+2023-10-13 18:43:30,625 db present
+2023-10-13 18:43:38,048 Entering details to the active directory
+2023-10-13 18:43:38,054 detected 'bcrypt' backend, version '4.0.1'
+2023-10-13 18:43:38,055 'bcrypt' backend lacks $2$ support, enabling workaround

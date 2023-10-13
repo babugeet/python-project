@@ -5,6 +5,8 @@
 #TODO #8 Check if the user already exist before taking any more user input
 #TODO #9 Supress unwanted message in log (when loglevel is DEBUG)
 #TODO #7 Implement password policy check
+# v2.5 babugeet; Added check for if the user already exist before taking any more user input; issue8
+# v2.4 babugeet; Added password verification during add operation; issue#12
 # v2.3 babugeet; Implemented Delete operation and password hidden
 # v2.2 babugeet; Implemented argument approach for user input.
 # v2.1 babugeet;  Accepted password,hashed password, list db content after password check
@@ -43,18 +45,44 @@ def create_table():
     conn.close()
 
 def take_password():
-    password = getpass("Enter the password: ")
+
+    i=3
+    #12 Ask password twice while collecting the password for add operation
+    while i>=0:
+        password = getpass("Enter the password: ")
+        re_entered_pass = getpass("Re-enter the password: ")
+        if password==re_entered_pass:
+            break
+        else:
+            i=i-1
+        if i == 0:
+            logging.error("Password check filled, user not added in the db")
+            exit(2)
+            
+
     return password
+
+def verify_user_on_db(name_input):
+    conn = sqlite3.connect(DB_NAME) 
+    c = conn.cursor()
+    c.execute("SELECT * from phonebook WHERE NAme=(?)",(name_input,))
+    return c
         
 def take_input():
-
-    print("Enter details to the active directory ")
-    logging.info('Entering details to the active directory')
-    phone_dict["name"]=input("Enter your Name: ")
+    input_name=input("Enter your Name: ")
+    #8 Check if the user already exist before taking any more user input
+    c=verify_user_on_db(input_name)
+    if len(c.fetchall()) != 0:
+        print('duplicate {} user  found'.format(input_name))
+        logging.error('duplicate {} user  found'.format(input_name))
+        exit(1)
+    phone_dict["name"]=input_name
     phone_dict["age"]=int(input("Enter your age: "))
     phone_dict["place"]=input("Enter your place: ")
     phone_dict["phone"]=int(input("Enter your phone number: "))
     password = take_password()
+    print("Enter details to the active directory ")
+    logging.info('Entering details to the active directory')
     # hashed_password = hasher.hash(password)
     phone_dict["password"]=password
     return phone_dict
@@ -85,9 +113,7 @@ class PhoneBook():
             if conn:
                 conn.close()
 def read_db(name_input):
-    conn = sqlite3.connect(DB_NAME) 
-    c = conn.cursor()
-    c.execute("SELECT * from phonebook WHERE NAme=(?)",(name_input,))
+    c=verify_user_on_db(name_input)
     if len(c.fetchall()) == 0:
         print('{} user not found'.format(name_input))
         logging.error('{} user not found'.format(name_input))
