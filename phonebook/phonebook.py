@@ -1,8 +1,9 @@
 # This is a sample project
 # Revision history
+#TODO #12 Ask password twice while collecting the password for add operation
+#TODO #10 Implement a admin password for deleting users
 #TODO #8 Check if the user already exist before taking any more user input
 #TODO #9 Supress unwanted message in log (when loglevel is DEBUG)
-#TODO #4 Implement logging
 #TODO #7 Implement password policy check
 # v2.3 babugeet; Implemented Delete operation and password hidden
 # v2.2 babugeet; Implemented argument approach for user input.
