@@ -26,18 +26,18 @@ from getpass import getpass
 
 DB_NAME="phonebook.db"
 phone_dict={}
-def create_db():
-    if os.path.isfile(DB_NAME):
+def create_db(dbname):
+    if os.path.isfile(dbname):
         try:
-            conn=sqlite3.connect(DB_NAME)
+            conn=sqlite3.connect(dbname)
             logging.info("db present")
             print("db present")
         except: 
             print("error in creating db")
             logging.error('error in creating db')
             exit()
-def create_table():
-    conn = sqlite3.connect(DB_NAME) 
+def create_table(dbname):
+    conn = sqlite3.connect(dbname) 
     c = conn.cursor()
     sql = 'create table if not exists phonebook (Name VARCHAR PRIMARY KEY, Age INT, Place VARCHAR, Phone INT, PASS VARCHAR)'
     c.execute(sql)
@@ -175,8 +175,8 @@ def selection_execution(oper_input):
 
 def main():
     logging.basicConfig(format='%(asctime)s %(message)s',filename='example.log', level=logging.DEBUG)
-    create_db()
-    create_table()
+    create_db(DB_NAME)
+    create_table(DB_NAME)
     oper_sel=operator_selection()
     selection_execution(oper_sel)
     
