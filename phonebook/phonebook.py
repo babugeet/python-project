@@ -44,12 +44,15 @@ def create_table(dbname):
     conn.commit()
     conn.close()
 
+def password_input(prompt):
+    return getpass(prompt)
+
 def take_password():
     i=3
     #12 Ask password twice while collecting the password for add operation
     while i>=0:
-        password = getpass("Enter the password: ")
-        re_entered_pass = getpass("Re-enter the password: ")
+        password = password_input("Enter the password: ")
+        re_entered_pass = password_input("Re-enter the password: ")
         if password==re_entered_pass:
             break
         else:

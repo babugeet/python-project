@@ -61,9 +61,12 @@ class TestAddDB(unittest.TestCase):
     def test_add_db_userfailure(self):
         c=phonebook.verify_user_on_db( "name")
         self.assertIs(len(c.fetchall()) , 0)
-
+    @patch('phonebook.DB_NAME',DBNAME)
     def test_delete_user(self):
-        pass
+        phonebook.delete_user("John Doe")
+        c=phonebook.verify_user_on_db("John Doe")
+        self.assertIs(len(c.fetchall()) , 0)
+
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -99,7 +102,24 @@ class TestOperatorSelection(unittest.TestCase):
         output=phonebook.operator_selection()
         self.assertEqual(output,"read")
 
+class TestPassword(unittest.TestCase):
+    # def setUp(self):
+    #     pass
+    # def tearDown(self):
+    #     pass
+    @patch('phonebook.password_input', side_effect=['password123', 'password123'])
+    def test_valid_password(self, mock_password_input):
+        password = phonebook.take_password()
+        self.assertEqual(password, 'password123')
 
-
+    @patch('phonebook.password_input', side_effect=['password123', 'password23','password123', 'password23','password123', 'password23'])
+    def test_wrong_password_rentry(self, mock_password_input):
+        with self.assertRaises(SystemExit) as cm:
+              password = phonebook.take_password()
+        self.assertEqual(cm.exception.code,2)
+    @patch('phonebook.password_input', side_effect=['password123', 'password23','password123', 'password23','password123', 'password123'])
+    def test_right_password_last_try(self, mock_password_input):
+        password = phonebook.take_password()
+        self.assertEqual(password, 'password123')
 if __name__=='__main__':
 	unittest.main()
