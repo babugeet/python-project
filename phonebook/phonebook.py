@@ -45,7 +45,6 @@ def create_table(dbname):
     conn.close()
 
 def take_password():
-
     i=3
     #12 Ask password twice while collecting the password for add operation
     while i>=0:
@@ -137,6 +136,10 @@ def operator_selection():
         # print((sys.argv[0]))
         logging.error("Failed to recieve user input, multiple options given")
         print( " Only one operation supported at a time, pls choose one of ( add, read, delete)")
+        exit(1)
+    elif len(sys.argv)==1:
+        logging.error("Failed to recieve user input, no options given")
+        print( " No input arguments provided, pls choose one of ( add, read, delete)")
         exit(1)
     return sys.argv[1]
 
