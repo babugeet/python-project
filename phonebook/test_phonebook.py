@@ -182,7 +182,18 @@ class TestReadDB(unittest.TestCase):
         with self.assertRaises(SystemExit) as cm:
               phonebook.read_db("John Doe")
         self.assertEqual(cm.exception.code,1)
-        
+    @patch('phonebook.verify_user_on_db')
+    def test_user_not_found(self,mock_verify_user_on_db):
+        mock_verify_user_on_db.return_value.fetchall.return_value=[]
+        with self.assertRaises(SystemExit) as er:
+            phonebook.read_db("fake user")
+        self.assertEqual(er.exception.code,1)
+
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        os.remove("test_phonebook.db")
+        return super().tearDownClass()
 
 
 
