@@ -21,7 +21,7 @@ import sqlite3
 import os
 import sys
 import logging
-from passlib.hash import bcrypt
+import passlib.hash #import bcrypt
 from getpass import getpass
 
 DB_NAME="phonebook.db"
@@ -44,12 +44,15 @@ def create_table(dbname):
     conn.commit()
     conn.close()
 
+def password_input(prompt):
+    return getpass(prompt)
+
 def take_password():
     i=3
     #12 Ask password twice while collecting the password for add operation
     while i>=0:
-        password = getpass("Enter the password: ")
-        re_entered_pass = getpass("Re-enter the password: ")
+        password = password_input("Enter the password: ")
+        re_entered_pass = password_input("Re-enter the password: ")
         if password==re_entered_pass:
             break
         else:
@@ -93,7 +96,7 @@ class PhoneBook():
         self.age=input_dict["age"]
         self.place=input_dict["place"]
         self.phone=int(input_dict["phone"])
-        self.hasher = bcrypt.using(rounds=13) 
+        self.hasher = passlib.hash.bcrypt.using(rounds=13) 
         self.password=self.hasher.hash(input_dict["password"])
 
 
@@ -118,10 +121,11 @@ def read_db(name_input):
         logging.error('{} user not found'.format(name_input))
         exit(1)
     password = take_password()
-    hasher = bcrypt.using(rounds=13)
-    hashed_password=c.execute("SELECT PASS from phonebook WHERE NAme=(?)",(name_input,))
+    hashed_password=c.execute("SELECT PASS from phonebook WHERE NAme=(?)",(name_input,)).fetchone()[0]
+    # hasher = passlib.hash.bcrypt.using(rounds=13)
+    flag=passlib.hash.bcrypt.using(rounds=13).verify(password, bytes(hashed_password,'utf-8'))
     # print(hashed_password.fetchone()[0])
-    if hasher.verify(password, bytes(hashed_password.fetchone()[0],'utf-8')):
+    if flag:
         c.execute("SELECT NAme,Age,Place,Phone from phonebook WHERE NAme=(?)",(name_input,))
         output=c.fetchone()
         print(f'Name is {output[0]}, Age is {output[1]}, Place is {output[2]}, Phone number is {output[3]} ')
@@ -129,6 +133,7 @@ def read_db(name_input):
     else:
         print("Password Error")
         logging.error("Password Error")
+        exit(1)
     c.close()
 
 def operator_selection():
