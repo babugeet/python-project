@@ -40,6 +40,36 @@ class Testphonebook(unittest.TestCase):
     def tearDownClass(cls) -> None:
         os.remove(DBNAME)
         return super().tearDownClass()
+    
+class Testverify_user_on_db(unittest.TestCase):
+    @patch('phonebook.DB_NAME',DBNAME)
+    def setUp(self):
+        self.test_dict= {
+            "name": "John Doe",
+            "age": 30,
+            "place": "New York",
+            "phone": 1234567890,
+            "password": "hashed_password"
+        }
+        phonebook.create_table(DBNAME)
+        conn = sqlite3.connect(DBNAME) 
+        c = conn.cursor()
+        conn.commit()
+        c.close()
+        self.phone_book=phonebook.PhoneBook(self.test_dict)
+
+    @patch('phonebook.DB_NAME',DBNAME)
+    def test_verify_useruser(self):
+        self.phone_book.add_db()
+        #verify if user present
+        c=phonebook.verify_user_on_db( self.test_dict["name"])
+        self.assertIsNot(len(c.fetchall()) , 0)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        os.remove("test_phonebook.db")
+        return super().tearDownClass()
+
 class TestAddDB(unittest.TestCase):
     @patch('phonebook.DB_NAME',DBNAME)
     def setUp(self):
@@ -195,6 +225,49 @@ class TestReadDB(unittest.TestCase):
         os.remove("test_phonebook.db")
         return super().tearDownClass()
 
+
+class Test_operator_selection_execution(unittest.TestCase):
+    @patch('phonebook.DB_NAME',DBNAME)
+    def setUp(self):
+        self.test_dict= {
+            "name": "Doe",
+            "age": 30,
+            "place": "New York",
+            "phone": 1234567890,
+            "password": "hashed_password"
+        }
+        phonebook.create_table(DBNAME)
+        conn = sqlite3.connect(DBNAME) 
+        c = conn.cursor()
+        conn.commit()
+        c.close()
+        self.phone_book=phonebook.PhoneBook(self.test_dict)
+        self.phone_book.add_db()
+    @patch('phonebook.DB_NAME',DBNAME)
+    @patch('phonebook.take_input')
+    def test_input_add(self,mock_take_input):
+        mock_take_input.return_value={"name": "John Doe","age": 30,"place": "New York","phone": 1234567890,"password": "hashed_password"}
+        phonebook.selection_execution("add")
+    @patch('phonebook.DB_NAME',DBNAME)
+    @patch('builtins.input')
+    @patch('phonebook.selection_execution')
+    def test_input_read(self,mock_selection,mock_input):
+        mock_input.return_value="Doe"
+        # mock_input.return_value={"name": "John Doe","age": 30,"place": "New York","phone": 1234567890,"password": "hashed_password"}
+        mock_selection.return_value=True
+        phonebook.selection_execution("read")
+    @patch('phonebook.DB_NAME',DBNAME)
+    def test_wrong_delete(self):
+        with self.assertRaises(SystemExit)as err:
+            phonebook.selection_execution("wrong")
+        self.assertEqual(err.exception.code,1)
+    
+    @patch('phonebook.DB_NAME',DBNAME)
+    @patch('builtins.input')
+    def test_delete(self,mock_input):
+        mock_input.return_value="Doe"
+        phonebook.selection_execution("delete")
+        # self.assertEqual(err.exception.code,1)
 
 
 
