@@ -1,6 +1,6 @@
 # This is a sample project
 # Revision history
-#TODO #12 Ask password twice while collecting the password for add operation
+#TODO #18 Implement individual error message for password policy check
 #TODO #10 Implement a admin password for deleting users
 #TODO #8 Check if the user already exist before taking any more user input
 #TODO #9 Supress unwanted message in log (when loglevel is DEBUG)
@@ -23,6 +23,16 @@ import sys
 import logging
 import passlib.hash #import bcrypt
 from getpass import getpass
+
+from password_strength import PasswordPolicy
+
+policy = PasswordPolicy.from_names(
+    length=8,  # min length: 8
+    uppercase=2,  # need min. 2 uppercase letters
+    numbers=2,  # need min. 2 digits
+    special=2,  # need min. 2 special characters
+    nonletters=2,  # need min. 2 non-letter characters (digits, specials, anything)
+)
 
 DB_NAME="phonebook.db"
 phone_dict={}
@@ -47,12 +57,22 @@ def create_table(dbname):
 def password_input(prompt):
     return getpass(prompt)
 
+def password_policy_check(input):
+    output=policy.test(input)
+    if len(output)==0:
+        pass
+    else:
+        print(output)
+        exit(3)
+
 def take_password():
     i=3
     #12 Ask password twice while collecting the password for add operation
     while i>=0:
         password = password_input("Enter the password: ")
+        
         re_entered_pass = password_input("Re-enter the password: ")
+        password_policy_check(re_entered_pass)
         if password==re_entered_pass:
             break
         else:

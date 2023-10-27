@@ -109,6 +109,16 @@ class TestAddDB(unittest.TestCase):
         os.remove("test_phonebook.db")
         return super().tearDownClass()
 
+class TestPasswordPolicyCheck(unittest.TestCase):
+    def test_failedpassword(self):
+        password="Admin"
+        with self.assertRaises(SystemExit) as cm:
+              phonebook.password_policy_check(password)
+        self.assertEqual(cm.exception.code,3)
+    def test_correct_password(self):
+        password="ADdmin@#1234"
+        phonebook.password_policy_check(password)
+
 class TestOperatorSelection(unittest.TestCase):
     def setUp(self):
         self.original_arg=sys.argv
@@ -144,17 +154,23 @@ class TestPassword(unittest.TestCase):
     # def tearDown(self):
     #     pass
     @patch('phonebook.password_input', side_effect=['password123', 'password123'])
-    def test_valid_password(self, mock_password_input):
+    @patch('phonebook.password_policy_check')
+    def test_valid_password(self,mock_policy_check ,mock_password_input):
+        mock_policy_check.return_value=[]
         password = phonebook.take_password()
         self.assertEqual(password, 'password123')
 
     @patch('phonebook.password_input', side_effect=['password123', 'password23','password123', 'password23','password123', 'password23'])
-    def test_wrong_password_rentry(self, mock_password_input):
+    @patch('phonebook.password_policy_check')
+    def test_wrong_password_rentry(self, mock_policy_check,mock_password_input):
+        mock_policy_check.return_value=[]
         with self.assertRaises(SystemExit) as cm:
               password = phonebook.take_password()
         self.assertEqual(cm.exception.code,2)
     @patch('phonebook.password_input', side_effect=['password123', 'password23','password123', 'password23','password123', 'password123'])
-    def test_right_password_last_try(self, mock_password_input):
+    @patch('phonebook.password_policy_check')
+    def test_right_password_last_try(self,mock_policy_check, mock_password_input):
+        mock_policy_check.return_value=[]
         password = phonebook.take_password()
         self.assertEqual(password, 'password123')
 
